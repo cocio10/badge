@@ -88,8 +88,9 @@
   </style>
 </head>
 <body>
-  <h1>Ciao, <input type="text" id="userName" placeholder="Inserisci il tuo nome" />, timbra</h1>
+  <h1>Timbra</h1>
   <div>
+    <input type="text" id="userName" placeholder="Inserisci il tuo nome" />
     <button id="in">IN</button>
     <button id="out">OUT</button>
   </div>
@@ -136,38 +137,6 @@
     // Posizione ufficio e raggio consentito (in km)
     const officeCoords = { lat: 40.870846, lon: 14.285135 }; // Napoli
     const radius = 2;
-
-    // Funzioni per i cookie
-    function setCookie(name, value, days) {
-      const date = new Date();
-      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-    }
-
-    function getCookie(name) {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const [key, value] = cookies[i].trim().split('=');
-        if (key === name) return value;
-      }
-      return null;
-    }
-
-    function generateDeviceId() {
-      return 'device-' + Math.random().toString(36).substr(2, 9);
-    }
-
-    function checkDevice() {
-      let deviceData = getCookie('device_data');
-      if (!deviceData) {
-        const deviceId = generateDeviceId();
-        setCookie('device_data', JSON.stringify({ deviceId, deviceName: '' }), 365);
-        return deviceId;
-      } else {
-        const parsedData = JSON.parse(deviceData);
-        return parsedData.deviceId;
-      }
-    }
 
     // Funzione per calcolare la distanza (formula dell'haversine)
     function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -216,15 +185,11 @@
     // Gestione del click sul pulsante IN
     document.getElementById("in").addEventListener("click", async () => {
       const userName = document.getElementById("userName").value;
-      const deviceId = checkDevice();
-      const deviceData = JSON.parse(getCookie('device_data'));
-
-      // Salva il nome del dispositivo nel cookie
-      if (userName && !deviceData.deviceName) {
-        deviceData.deviceName = userName;
-        setCookie('device_data', JSON.stringify(deviceData), 365);
+      if (!userName) {
+        document.getElementById("status").textContent = "Per favore, inserisci il tuo nome.";
+        return;
       }
-
+      const deviceId = userName; // Imposta deviceId col nome immesso
       const distance = calculateDistance(officeCoords.lat, officeCoords.lon, 40.870846, 14.285135);
 
       if (distance <= radius) {
@@ -238,14 +203,11 @@
     // Gestione del click sul pulsante OUT
     document.getElementById("out").addEventListener("click", async () => {
       const userName = document.getElementById("userName").value;
-      const deviceId = checkDevice();
-      const deviceData = JSON.parse(getCookie('device_data'));
-
-      if (userName && !deviceData.deviceName) {
-        deviceData.deviceName = userName;
-        setCookie('device_data', JSON.stringify(deviceData), 365);
+      if (!userName) {
+        document.getElementById("status").textContent = "Per favore, inserisci il tuo nome.";
+        return;
       }
-
+      const deviceId = userName; // Imposta deviceId col nome immesso
       const distance = calculateDistance(officeCoords.lat, officeCoords.lon, 40.870846, 14.285135);
 
       if (distance <= radius) {
@@ -284,10 +246,6 @@
 
     // Visualizza i dati
     document.getElementById("viewData").addEventListener("click", loadTimbrature);
-
-    // Mostra il nome del dispositivo
-    const deviceData = JSON.parse(getCookie('device_data'));
-    document.getElementById("deviceNameDisplay").textContent = `Nome dispositivo: ${deviceData.deviceName || 'Non impostato'}`;
   </script>
 </body>
 </html>
