@@ -138,6 +138,35 @@
     const officeCoords = { lat: 40.870846, lon: 14.285135 }; // Napoli
     const radius = 2;
 
+    // Funzioni per i cookie
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+    }
+
+    function getCookie(name) {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const [key, value] = cookies[i].trim().split('=');
+        if (key === name) return value;
+      }
+      return null;
+    }
+
+    function generateDeviceId() {
+      return 'device-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function checkDevice() {
+      let deviceId = getCookie('device_id');
+      if (!deviceId) {
+        deviceId = generateDeviceId();
+        setCookie('device_id', deviceId, 365);
+      }
+      return deviceId;
+    }
+
     // Funzione per calcolare la distanza (formula dell'haversine)
     function calculateDistance(lat1, lon1, lat2, lon2) {
       const toRad = (value) => (value * Math.PI) / 180;
@@ -149,8 +178,8 @@
         Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
       return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-    }
-
+      }
+  
     // Funzione per formattare il timestamp nel formato gg/mm/aa hh:mm
     function formatDate(date) {
       const day = String(date.getDate()).padStart(2, '0');
@@ -160,7 +189,7 @@
       const minutes = String(date.getMinutes()).padStart(2, '0');
       return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
-
+    
     // Funzione per salvare la timbratura nel Realtime Database
     async function saveTimbratura(type, latitude, longitude, deviceId) {
       try {
@@ -172,80 +201,121 @@
           coords: { latitude, longitude },
           deviceId,
         };
-
+    
         // Salva i dati nel Realtime Database
         const timbratureRef = ref(database, "timbrature");
         await push(timbratureRef, data);
-        document.getElementById("status").textContent = `${type} - Timbratura registrata: ${formattedTimestamp}`;
+    
+        document.getElementById('ok').innerText = `${type} registrato con successo!`;
       } catch (error) {
-        console.error('Errore nel salvataggio della timbratura:', error);
+        console.error("Errore nel salvataggio della timbratura:", error);
+        document.getElementById('status').innerText = "Errore nel salvataggio.";
       }
     }
 
-    // Gestione del click sul pulsante IN
-    document.getElementById("in").addEventListener("click", async () => {
-      const userName = document.getElementById("userName").value;
-      if (!userName) {
-        document.getElementById("status").textContent = "Per favore, inserisci il tuo nome.";
+    // Funzione per gestire la timbratura
+    function handleTimbratura(type) {
+      const deviceName = getDeviceName(); // Ottieni il nome dal cookie
+      if (!deviceName) {
+        document.getElementById('status').innerText = 'Per favore, inserisci il tuo nome per timbrare.';
         return;
       }
-      const deviceId = userName; // Imposta deviceId col nome immesso
-      const distance = calculateDistance(officeCoords.lat, officeCoords.lon, 40.870846, 14.285135);
+      
+      const deviceId = checkDevice();
 
-      if (distance <= radius) {
-        await saveTimbratura('IN', 40.870846, 14.285135, deviceId);
-        document.getElementById("ok").textContent = 'Timbratura IN registrata';
-      } else {
-        document.getElementById("status").textContent = "Sei fuori dal raggio consentito.";
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          // Verifica distanza GPS
+          const distance = calculateDistance(
+            latitude, longitude, officeCoords.lat, officeCoords.lon
+          );
+
+          console.log(`Distanza calcolata: ${distance} km`);
+
+          if (distance <= radius) {
+            await saveTimbratura(type, latitude, longitude, deviceId);
+          } else {
+            document.getElementById('status').innerText = 
+              'Errore: Sei fuori dall\'area consentita.';
+          }
+        },
+        () => {
+          document.getElementById('status').innerText = 
+            'Errore: Impossibile accedere alla posizione.';
+        }
+      );
+    }
+
+    // Funzione per gestire il salvataggio del nome nel cookie
+    function setDeviceName() {
+      const userName = document.getElementById('userName').value.trim();
+      if (userName) {
+        setCookie('device_name', userName, 365); // Salva il nome come device_name nei cookie
+        document.getElementById('userName').style.display = 'none'; // Nascondi il campo di input
+        document.getElementById('deviceNameDisplay').innerText = userName; // Mostra il nome come testo
       }
-    });
+    }
 
-    // Gestione del click sul pulsante OUT
-    document.getElementById("out").addEventListener("click", async () => {
-      const userName = document.getElementById("userName").value;
-      if (!userName) {
-        document.getElementById("status").textContent = "Per favore, inserisci il tuo nome.";
+    // Funzione per ottenere il nome dal cookie
+    function getDeviceName() {
+      return getCookie('device_name');
+    }
+
+    // Aggiungi un evento al pulsante "Timbra" per salvare il nome e timbrare
+    document.getElementById('in').onclick = () => {
+      setDeviceName(); // Salva il nome quando si timbra
+      handleTimbratura('In');
+    };
+    document.getElementById('out').onclick = () => {
+      setDeviceName(); // Salva il nome quando si timbra
+      handleTimbratura('Out');
+    };
+
+    // Funzione per visualizzare i dati
+    async function viewData() {
+      const deviceName = getDeviceName();
+      if (!deviceName) {
+        document.getElementById('status').innerText = 'Per favore, inserisci il tuo nome per timbrare.';
         return;
       }
-      const deviceId = userName; // Imposta deviceId col nome immesso
-      const distance = calculateDistance(officeCoords.lat, officeCoords.lon, 40.870846, 14.285135);
-
-      if (distance <= radius) {
-        await saveTimbratura('OUT', 40.870846, 14.285135, deviceId);
-        document.getElementById("ok").textContent = 'Timbratura OUT registrata';
-      } else {
-        document.getElementById("status").textContent = "Sei fuori dal raggio consentito.";
-      }
-    });
-
-    // Funzione per visualizzare lo storico delle timbrature
-    async function loadTimbrature() {
+      
+      const deviceId = checkDevice();
       const timbratureRef = ref(database, 'timbrature');
       const snapshot = await get(timbratureRef);
-      const timbrature = snapshot.val();
-      const tableBody = document.getElementById("timbratureTable").getElementsByTagName("tbody")[0];
-      tableBody.innerHTML = ''; // Pulisce la tabella
+      
+      if (snapshot.exists()) {
+        const timbrature = snapshot.val();
 
-      for (const key in timbrature) {
-        if (timbrature.hasOwnProperty(key)) {
-          const timbratura = timbrature[key];
-          const row = tableBody.insertRow();
-          const cellIn = row.insertCell();
-          const cellOut = row.insertCell();
+        // Filtrare i dati "IN" e "OUT"
+        const filteredInData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId && timbratura.type === 'In');
+        const filteredOutData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId && timbratura.type === 'Out');
+        
+        const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = ''; // Pulisce la tabella prima di aggiungere nuove righe
 
-          if (timbratura.type === 'IN') {
-            cellIn.textContent = timbratura.timestamp;
-          } else if (timbratura.type === 'OUT') {
-            cellOut.textContent = timbratura.timestamp;
-          }
-        }
+        // Aggiungi la riga per i dati "IN"
+        const row = tableBody.insertRow();
+        const inCell = row.insertCell(0);
+        inCell.innerHTML = filteredInData.map(timbratura => `
+          <p>${timbratura.timestamp}</p>
+        `).join('');
+
+        // Aggiungi la riga per i dati "OUT"
+        const outCell = row.insertCell(1);
+        outCell.innerHTML = filteredOutData.map(timbratura => `
+          <p>${timbratura.timestamp}</p>
+        `).join('');
+
+        document.getElementById('dataTable').style.display = 'block';
+      } else {
+        document.getElementById('status').innerText = 'Nessuna timbratura trovata.';
       }
-
-      document.getElementById("dataTable").style.display = 'block';
     }
 
-    // Visualizza i dati
-    document.getElementById("viewData").addEventListener("click", loadTimbrature);
+    // Aggiungi un evento per visualizzare i dati
+    document.getElementById('viewData').onclick = viewData;
   </script>
 </body>
 </html>
