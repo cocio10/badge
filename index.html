@@ -30,17 +30,17 @@
   <p id="status"></p>
 
   <script type="module">
-    // Importa le funzionalità di Firebase
+    // Importa le librerie di Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 
     // Configurazione Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCNDBkX3-sYQKD_BKzMvyrR6td5UmwOfwA",
       authDomain: "badge-56d25.firebaseapp.com",
-      databaseURL: "https://badge-56d25-default-rtdb.europe-west1.firebasedatabase.app",
+      databaseURL: "https://badge-56d25-default-rtdb.firebaseio.com", // Realtime Database URL
       projectId: "badge-56d25",
-      storageBucket: "badge-56d25.firebasestorage.app",
+      storageBucket: "badge-56d25.appspot.com",
       messagingSenderId: "898685148145",
       appId: "1:898685148145:web:4f8b26ac017066e9d18250",
       measurementId: "G-1TPJ37T3D1"
@@ -48,11 +48,11 @@
 
     // Inizializza Firebase
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const database = getDatabase(app);
 
     // Posizione ufficio e raggio consentito (in km)
     const officeCoords = { lat: 40.870846, lon: 14.285135 }; // Napoli
-    const radius = 10;
+    const radius = 0.02;
 
     // Funzioni per i cookie
     function setCookie(name, value, days) {
@@ -96,16 +96,21 @@
       return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     }
 
-    // Funzione per salvare la timbratura su Firebase
+    // Funzione per salvare la timbratura nel Realtime Database
     async function saveTimbratura(type, latitude, longitude, deviceId) {
       try {
-        const timestamp = new Date();
-        await addDoc(collection(db, "timbrature"), {
+        const timestamp = new Date().toISOString();
+        const data = {
           type,
           timestamp,
           coords: { latitude, longitude },
           deviceId,
-        });
+        };
+
+        // Salva i dati nel Realtime Database
+        const timbratureRef = ref(database, "timbrature");
+        await push(timbratureRef, data);
+
         document.getElementById('status').innerText = `${type} registrato con successo!`;
       } catch (error) {
         console.error("Errore nel salvataggio della timbratura:", error);
@@ -125,6 +130,8 @@
           const distance = calculateDistance(
             latitude, longitude, officeCoords.lat, officeCoords.lon
           );
+
+          console.log(`Distanza calcolata: ${distance} km`);
 
           if (distance <= radius) {
             await saveTimbratura(type, latitude, longitude, deviceId);
