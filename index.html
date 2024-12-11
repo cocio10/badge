@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timbratura Dipendenti</title>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      padding: 15px 30px;
+      margin: 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 16px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Timbratura Dipendenti</h1>
+  <button id="in">In</button>
+  <button id="out">Out</button>
+  <p id="status"></p>
+
+  <script>
+    // Configurazione Firebase
+    const firebaseConfig = {
+    apiKey: "AIzaSyCNDBkX3-sYQKD_BKzMvyrR6td5UmwOfwA",
+    authDomain: "badge-56d25.firebaseapp.com",
+    projectId: "badge-56d25",
+    storageBucket: "badge-56d25.firebasestorage.app",
+    messagingSenderId: "898685148145",
+    appId: "1:898685148145:web:4f8b26ac017066e9d18250",
+    measurementId: "G-1TPJ37T3D1"
+    };
+
+    // Inizializza Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Posizione ufficio e raggio consentito (in km)
+    const officeCoords = { lat: 40.870846, lon: 14.285135 }; // Napoli
+    const radius = 0.02;
+
+    // Funzioni per i cookie
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+    }
+
+    function getCookie(name) {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const [key, value] = cookies[i].trim().split('=');
+        if (key === name) return value;
+      }
+      return null;
+    }
+
+    function generateDeviceId() {
+      return 'device-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function checkDevice() {
+      let deviceId = getCookie('device_id');
+      if (!deviceId) {
+        deviceId = generateDeviceId();
+        setCookie('device_id', deviceId, 365);
+      }
+      return deviceId;
+    }
+
+    // Funzione per calcolare la distanza (formula dell'haversine)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const toRad = (value) => (value * Math.PI) / 180;
+      const R = 6371; // Raggio terrestre in km
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    }
+
+    // Funzione per salvare la timbratura su Firebase
+    async function saveTimbratura(type, latitude, longitude, deviceId) {
+      try {
+        const timestamp = new Date();
+        await db.collection("timbrature").add({
+          type,
+          timestamp,
+          coords: { latitude, longitude },
+          deviceId,
+        });
+        document.getElementById('status').innerText = `${type} registrato con successo!`;
+      } catch (error) {
+        console.error("Errore nel salvataggio della timbratura:", error);
+        document.getElementById('status').innerText = "Errore nel salvataggio.";
+      }
+    }
+
+    // Funzione per gestire la timbratura
+    function handleTimbratura(type) {
+      const deviceId = checkDevice();
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          // Verifica distanza GPS
+          const distance = calculateDistance(
+            latitude, longitude, officeCoords.lat, officeCoords.lon
+          );
+
+          if (distance <= radius) {
+            await saveTimbratura(type, latitude, longitude, deviceId);
+          } else {
+            document.getElementById('status').innerText = 
+              'Errore: Sei fuori dall\'area consentita.';
+          }
+        },
+        () => {
+          document.getElementById('status').innerText = 
+            'Errore: Impossibile accedere alla posizione.';
+        }
+      );
+    }
+
+    document.getElementById('in').onclick = () => handleTimbratura('In');
+    document.getElementById('out').onclick = () => handleTimbratura('Out');
+  </script>
+</body>
+</html>
