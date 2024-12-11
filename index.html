@@ -152,22 +152,15 @@
 
     // Funzione per salvare il nome nel cookie
     function setDeviceName(name) {
-      localStorage.setItem('deviceId', name);  // Salva il nome nel localStorage
+      const expires = new Date();
+      expires.setHours(expires.getHours() + 24);  // Imposta la scadenza del cookie a 24 ore (puoi modificarla come preferisci)
+      document.cookie = `deviceId=${name}; expires=${expires.toUTCString()}; path=/`;
     }
-
+    
     // Funzione per ottenere il nome dal cookie
     function getDeviceName() {
-      const deviceId = getCookie('device_id');
-      console.log("Device ID:", deviceId);  // Verifica se il device_id è presente nel cookie
-    
-      if (deviceId) {
-        document.getElementById('deviceNameDisplay').innerText = `${deviceId}`; // Mostra il nome come testo
-        document.getElementById('deviceNameDisplay').style.display = 'block'; // Mostra il testo
-        return deviceId;  // Ritorna il device_id
-      } else {
-        document.getElementById('deviceNameDisplay').style.display = 'none'; // Nascondi il testo
-        return null;
-      }
+      const name = document.cookie.match('(^|;)\\s*deviceId\\s*=\\s*([^;]+)');
+      return name ? name.pop() : null;
     }
 
     // Funzione per calcolare la distanza (formula dell'haversine)
@@ -272,14 +265,14 @@
 
         // Funzione generica per gestire sia la timbratura IN che OUT
     function clockAction(type) {
-      let deviceId = getDeviceName();  // Ottieni il deviceId dal cookie (o variabile globale)
+      let deviceId = getDeviceName();  // Ottieni il deviceId dal cookie
     
       // Se il deviceId non esiste, chiediamo di inserire il nome e lo memorizziamo
       if (!deviceId) {
         const name = prompt("Inserisci il tuo nome per registrare la timbratura:");
         if (name) {
           deviceId = name;  // Memorizza il nome come deviceId
-          setDeviceName(deviceId);  // Funzione per salvare il deviceId (ad esempio nei cookies o nel localStorage)
+          setDeviceName(deviceId);  // Salva il deviceId nel cookie
         } else {
           document.getElementById('status').innerText = "Nome non inserito, impossibile procedere.";
           return;
@@ -314,8 +307,7 @@
         }
       });
     }
-
-    
+        
     // Gestione eventi per i bottoni
     document.getElementById('in').addEventListener('click', () => clockAction('in'));
     document.getElementById('out').addEventListener('click', () => clockAction('out'));
