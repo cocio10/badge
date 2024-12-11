@@ -89,9 +89,6 @@
 </head>
 <body>
   <h1>Ciao, <p id="deviceNameDisplay"></p></h1>
-  <div id="userForm">
-    <input type="text" id="userName" placeholder="Inserisci il tuo nome" />
-  </div>
   <button id="in">IN</button>
   <button id="out">OUT</button>
   <button id="viewData">Visualizza Dati</button>
@@ -164,12 +161,10 @@
       console.log("Device ID:", deviceId);  // Verifica se il device_id è presente nel cookie
     
       if (deviceId) {
-        document.getElementById('userForm').style.display = 'none'; // Nascondi il form
         document.getElementById('deviceNameDisplay').innerText = `${deviceId}`; // Mostra il nome come testo
         document.getElementById('deviceNameDisplay').style.display = 'block'; // Mostra il testo
         return deviceId;  // Ritorna il device_id
       } else {
-        document.getElementById('userForm').style.display = 'block'; // Mostra il form se non esiste il cookie
         document.getElementById('deviceNameDisplay').style.display = 'none'; // Nascondi il testo
         return null;
       }
