@@ -306,7 +306,11 @@
         }
       });
     }
-        
+
+    function deviceNameDisplay () {
+      document.getElementById('deviceNameDisplay').innerText = getDeviceName();
+
+      
     // Gestione eventi per i bottoni
     document.getElementById('in').addEventListener('click', () => clockAction('in'));
     document.getElementById('out').addEventListener('click', () => clockAction('out'));
@@ -314,7 +318,7 @@
     
 
     // Avvia la lettura del nome del dispositivo
-    getDeviceName();
+    deviceNameDisplay();
   </script>
 </body>
 </html>
