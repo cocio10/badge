@@ -233,20 +233,32 @@
       try {
         const timbratureRef = ref(database, 'timbrature');
         const snapshot = await get(timbratureRef);
+        const deviceId = getDeviceName();  // Ottieni il deviceId dal cookie (o da una variabile globale)
+    
         if (snapshot.exists()) {
           const data = snapshot.val();
           const tableBody = document.querySelector('#timbratureTable tbody');
           tableBody.innerHTML = '';
+    
+          // Filtra le timbrature per deviceId
           for (const key in data) {
             const timbratura = data[key];
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${timbratura.type === 'IN' ? timbratura.timestamp : ''}</td>
-              <td>${timbratura.type === 'OUT' ? timbratura.timestamp : ''}</td>
-            `;
-            tableBody.appendChild(row);
+    
+            if (timbratura.deviceId === deviceId) {  // Filtro per deviceId
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${timbratura.type === 'IN' ? timbratura.timestamp : ''}</td>
+                <td>${timbratura.type === 'OUT' ? timbratura.timestamp : ''}</td>
+              `;
+              tableBody.appendChild(row);
+            }
           }
-          document.getElementById('dataTable').style.display = 'block';
+          
+          if (tableBody.children.length === 0) {
+            document.getElementById('status').innerText = 'Nessuna timbratura trovata per questo dispositivo.';
+          } else {
+            document.getElementById('dataTable').style.display = 'block';
+          }
         } else {
           document.getElementById('status').innerText = 'Nessuna timbratura trovata.';
         }
@@ -254,6 +266,7 @@
         console.error("Errore nel recupero delle timbrature:", error);
       }
     }
+
 
     // Event listeners per i pulsanti
     document.getElementById('in').addEventListener('click', function () {
