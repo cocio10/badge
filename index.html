@@ -153,13 +153,14 @@
     // Funzione per salvare il nome nel cookie
     function setDeviceName(name) {
       const expires = new Date();
-      expires.setHours(expires.getHours() + 24);  // Imposta la scadenza del cookie a 24 ore (puoi modificarla come preferisci)
+      expires.setHours(expires.getHours() + 240000000);  // Imposta la scadenza del cookie a 24 ore (puoi modificarla come preferisci)
       document.cookie = `deviceId=${name}; expires=${expires.toUTCString()}; path=/`;
     }
     
     // Funzione per ottenere il nome dal cookie
     function getDeviceName() {
       return getCookie('deviceId');
+      document.getElementById('deviceNameDisplay').innerText = getCookie('deviceId');
     }
 
     // Funzione per calcolare la distanza (formula dell'haversine)
