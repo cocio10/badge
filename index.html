@@ -89,7 +89,7 @@
 </head>
 <body>
   <h1>Timbra</h1>
-  <div>
+  <div id="userForm">
     <input type="text" id="userName" placeholder="Inserisci il tuo nome" />
     <button id="in">IN</button>
     <button id="out">OUT</button>
@@ -159,14 +159,23 @@
       const userName = document.getElementById('userName').value.trim();
       if (userName) {
         setCookie('device_id', userName, 365); // Salva il nome come device_id nei cookie
-        document.getElementById('userName').style.display = 'none'; // Nascondi il campo di input
-        document.getElementById('deviceNameDisplay').innerText = userName; // Mostra il nome come testo
+        document.getElementById('userForm').style.display = 'none'; // Nascondi il form
+        document.getElementById('deviceNameDisplay').innerText = `ID Dispositivo: ${userName}`; // Mostra il nome come testo
+        document.getElementById('deviceNameDisplay').style.display = 'block'; // Mostra il testo
       }
     }
 
     // Funzione per ottenere il nome dal cookie
     function getDeviceName() {
-      return getCookie('device_id');
+      const deviceId = getCookie('device_id');
+      if (deviceId) {
+        document.getElementById('userForm').style.display = 'none'; // Nascondi il form
+        document.getElementById('deviceNameDisplay').innerText = `ID Dispositivo: ${deviceId}`; // Mostra il nome come testo
+        document.getElementById('deviceNameDisplay').style.display = 'block'; // Mostra il testo
+      } else {
+        document.getElementById('userForm').style.display = 'block'; // Mostra il form se non esiste il cookie
+        document.getElementById('deviceNameDisplay').style.display = 'none'; // Nascondi il testo
+      }
     }
 
     // Funzione per calcolare la distanza (formula dell'haversine)
@@ -195,11 +204,12 @@
     // Funzione per salvare la timbratura nel Realtime Database
     async function saveTimbratura(type, latitude, longitude) {
       try {
-        const deviceId = getDeviceName(); // Ottieni il nome dal cookie
+        const deviceId = getDeviceName();
         if (!deviceId) {
-          document.getElementById('status').innerText = 'Per favore, inserisci il tuo nome per timbrare.';
+          document.getElementById('status').innerText = 'Per favore inserisci il tuo nome per continuare.';
           return;
         }
+
         const timestamp = new Date();
         const formattedTimestamp = formatDate(timestamp);
         const data = {
@@ -274,6 +284,9 @@
     });
 
     document.getElementById('viewData').addEventListener('click', getTimbrature);
+
+    // Carica lo stato del dispositivo
+    getDeviceName();
   </script>
 </body>
 </html>
