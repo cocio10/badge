@@ -168,6 +168,8 @@
     // Funzione per ottenere il nome dal cookie
     function getDeviceName() {
       const deviceId = getCookie('device_id');
+      console.log("Device ID:", deviceId);  // Verifica se il device_id è presente nel cookie
+    
       if (deviceId) {
         document.getElementById('userForm').style.display = 'none'; // Nascondi il form
         document.getElementById('deviceNameDisplay').innerText = `ID Dispositivo: ${deviceId}`; // Mostra il nome come testo
@@ -285,8 +287,11 @@
 
     document.getElementById('viewData').addEventListener('click', getTimbrature);
 
-    // Carica lo stato del dispositivo
-    getDeviceName();
+      // Carica lo stato del dispositivo
+    document.addEventListener('DOMContentLoaded', () => {
+      // Carica lo stato del dispositivo solo dopo che il DOM è pronto
+      getDeviceName();
+    });
   </script>
 </body>
 </html>
