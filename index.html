@@ -57,6 +57,14 @@
       font-weight: bold;
       text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
     }
+
+    #ok {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: green;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -64,6 +72,7 @@
   <button id="in">IN</button>
   <button id="out">OUT</button>
   <p id="status"></p>
+  <p id="ok"></p>
 
   <script type="module">
     // Importa le librerie di Firebase
@@ -147,7 +156,7 @@
         const timbratureRef = ref(database, "timbrature");
         await push(timbratureRef, data);
 
-        document.getElementById('status').innerText = `${type} registrato con successo!`;
+        document.getElementById('ok').innerText = `${type} registrato con successo!`;
       } catch (error) {
         console.error("Errore nel salvataggio della timbratura:", error);
         document.getElementById('status').innerText = "Errore nel salvataggio.";
