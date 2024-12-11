@@ -217,27 +217,25 @@
           tableBody.innerHTML = '';  // Pulisce la tabella prima di aggiungere i nuovi dati
     
           // Filtra i dati per deviceId
-          const filteredData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId);
-    
-          // Aggiungi la riga per i dati "IN"
-          const row = tableBody.insertRow();
-    
-          // Aggiungi la cella per i dati "IN"
-          const inCell = row.insertCell(0);
-          inCell.innerHTML = filteredData.map(timbratura => `
-            <p>${timbratura.in}</p>
-          `).join('');
-    
-          // Aggiungi la cella per i dati "OUT"
-          const outCell = row.insertCell(1);
-          outCell.innerHTML = filteredOutData.map(timbratura => `
-            <p>${timbratura.out}</p>
-          `).join('');
-    
-          // Mostra la tabella dei dati
-          if (tableBody.children.length === 0) {
+          const filteredData = Object.values(data).filter(timbratura => timbratura.deviceId === deviceId);
+          
+          if (filteredData.length === 0) {
             document.getElementById('status').innerText = 'Nessuna timbratura trovata per questo dispositivo.';
           } else {
+            // Aggiungi la riga per ogni timbratura
+            filteredData.forEach(timbratura => {
+              const row = tableBody.insertRow();
+    
+              // Cella per i dati "IN"
+              const inCell = row.insertCell(0);
+              inCell.innerHTML = timbratura.in ? `<p>${timbratura.in}</p>` : "<p>Non timbrato</p>";
+    
+              // Cella per i dati "OUT"
+              const outCell = row.insertCell(1);
+              outCell.innerHTML = timbratura.out ? `<p>${timbratura.out}</p>` : "<p>Non timbrato</p>";
+            });
+    
+            // Mostra la tabella dei dati
             document.getElementById('dataTable').style.display = 'block';
           }
         } else {
