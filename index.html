@@ -159,8 +159,7 @@
     
     // Funzione per ottenere il nome dal cookie
     function getDeviceName() {
-      const name = document.cookie.match('(^|;)\\s*deviceId\\s*=\\s*([^;]+)');
-      return name ? name.pop() : null;
+      return getCookie('deviceId');
     }
 
     // Funzione per calcolare la distanza (formula dell'haversine)
