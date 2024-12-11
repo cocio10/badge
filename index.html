@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Timbratura Dipendenti</title>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -31,21 +29,25 @@
   <button id="out">Out</button>
   <p id="status"></p>
 
-  <script>
+  <script type="module">
+    // Importa le funzionalità di Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js";
+
     // Configurazione Firebase
     const firebaseConfig = {
-    apiKey: "AIzaSyCNDBkX3-sYQKD_BKzMvyrR6td5UmwOfwA",
-    authDomain: "badge-56d25.firebaseapp.com",
-    projectId: "badge-56d25",
-    storageBucket: "badge-56d25.firebasestorage.app",
-    messagingSenderId: "898685148145",
-    appId: "1:898685148145:web:4f8b26ac017066e9d18250",
-    measurementId: "G-1TPJ37T3D1"
+      apiKey: "AIzaSyCNDBkX3-sYQKD_BKzMvyrR6td5UmwOfwA",
+      authDomain: "badge-56d25.firebaseapp.com",
+      projectId: "badge-56d25",
+      storageBucket: "badge-56d25.appspot.com",
+      messagingSenderId: "898685148145",
+      appId: "1:898685148145:web:4f8b26ac017066e9d18250",
+      measurementId: "G-1TPJ37T3D1"
     };
 
     // Inizializza Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     // Posizione ufficio e raggio consentito (in km)
     const officeCoords = { lat: 40.870846, lon: 14.285135 }; // Napoli
@@ -97,7 +99,7 @@
     async function saveTimbratura(type, latitude, longitude, deviceId) {
       try {
         const timestamp = new Date();
-        await db.collection("timbrature").add({
+        await addDoc(collection(db, "timbrature"), {
           type,
           timestamp,
           coords: { latitude, longitude },
