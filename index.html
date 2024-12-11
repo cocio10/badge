@@ -217,28 +217,14 @@
           tableBody.innerHTML = '';  // Pulisce la tabella prima di aggiungere i nuovi dati
     
           // Filtra i dati per deviceId
-          const filteredInData = [];
-          const filteredOutData = [];
-    
-          for (const key in data) {
-            const timbratura = data[key];
-    
-            // Aggiungi i dati "IN" e "OUT" separatamente
-            if (timbratura.deviceId === deviceId) {
-              if (timbratura.type === 'IN') {
-                filteredInData.push(timbratura);
-              } else if (timbratura.type === 'OUT') {
-                filteredOutData.push(timbratura);
-              }
-            }
-          }
+          const filteredData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId);
     
           // Aggiungi la riga per i dati "IN"
           const row = tableBody.insertRow();
     
           // Aggiungi la cella per i dati "IN"
           const inCell = row.insertCell(0);
-          inCell.innerHTML = filteredInData.map(timbratura => `
+          inCell.innerHTML = filteredData.map(timbratura => `
             <p>${timbratura.in}</p>
           `).join('');
     
