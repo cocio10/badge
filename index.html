@@ -239,13 +239,13 @@
           // Aggiungi la cella per i dati "IN"
           const inCell = row.insertCell(0);
           inCell.innerHTML = filteredInData.map(timbratura => `
-            <p>${timbratura.timestamp} - ${timbratura.coords.latitude}, ${timbratura.coords.longitude}</p>
+            <p>${timbratura.in}</p>
           `).join('');
     
           // Aggiungi la cella per i dati "OUT"
           const outCell = row.insertCell(1);
           outCell.innerHTML = filteredOutData.map(timbratura => `
-            <p>${timbratura.timestamp} - ${timbratura.coords.latitude}, ${timbratura.coords.longitude}</p>
+            <p>${timbratura.out}</p>
           `).join('');
     
           // Mostra la tabella dei dati
