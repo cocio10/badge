@@ -100,10 +100,8 @@
     <table id="timbratureTable">
       <thead>
         <tr>
-          <th>Tipo</th>
-          <th>Data</th>
-          <th>Latitudine</th>
-          <th>Longitudine</th>
+          <th>IN</th>
+          <th>OUT</th>
         </tr>
       </thead>
       <tbody>
@@ -237,20 +235,26 @@
       
       if (snapshot.exists()) {
         const timbrature = snapshot.val();
-        const filteredData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId);
-        
-        const tableBody = document.getElementById('timbratureTable').getElementsByTagName('tbody')[0];
-        tableBody.innerHTML = '';
 
-        filteredData.forEach(timbratura => {
-          const row = tableBody.insertRow();
-          row.innerHTML = `
-            <td>${timbratura.type}</td>
-            <td>${timbratura.timestamp}</td>
-            <td>${timbratura.coords.latitude}</td>
-            <td>${timbratura.coords.longitude}</td>
-          `;
-        });
+      // Filtrare i dati "IN" e "OUT"
+      const filteredInData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId && timbratura.type === 'In');
+      const filteredOutData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId && timbratura.type === 'Out');
+      
+      const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+      tableBody.innerHTML = ''; // Pulisce la tabella prima di aggiungere nuove righe
+
+      // Aggiungi la riga per i dati "IN"
+      const row = tableBody.insertRow();
+      const inCell = row.insertCell(0);
+      inCell.innerHTML = filteredInData.map(timbratura => `
+        <p>${timbratura.timestamp}</p>
+      `).join('');
+
+      // Aggiungi la riga per i dati "OUT"
+      const outCell = row.insertCell(1);
+      outCell.innerHTML = filteredOutData.map(timbratura => `
+        <p>${timbratura.timestamp}</p>
+      `).join('');
 
         document.getElementById('dataTable').style.display = 'block';
       } else {
