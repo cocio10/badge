@@ -222,27 +222,65 @@
         alert("Geolocalizzazione non supportata.");
       }
     }
-
-    // Mostra i dati delle timbrature
-    function viewData() {
-      document.getElementById('dataTable').style.display = 'block';
-      const tableBody = document.querySelector('#timbratureTable tbody');
-      tableBody.innerHTML = ''; // Pulisce la tabella
-
-      get(ref(database, 'timbrature/')).then((snapshot) => {
-        if (snapshot.exists()) {
-          snapshot.forEach((childSnapshot) => {
-            const data = childSnapshot.val();
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${data.in}</td><td>${data.out}</td>`;
-            tableBody.appendChild(row);
-          });
-        } else {
-          alert("Nessuna timbratura registrata.");
-        }
-      });
-    }
     
+        // Mostra i dati delle timbrature
+    async function viewData() {
+      try {
+        const timbratureRef = ref(database, 'timbrature');
+        const snapshot = await get(timbratureRef);
+        const deviceId = getDeviceName();  // Ottieni il deviceId dal cookie (o da una variabile globale)
+    
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const tableBody = document.querySelector('#timbratureTable tbody');
+          tableBody.innerHTML = '';  // Pulisce la tabella prima di aggiungere i nuovi dati
+    
+          // Filtra i dati per deviceId
+          const filteredInData = [];
+          const filteredOutData = [];
+    
+          for (const key in data) {
+            const timbratura = data[key];
+    
+            // Aggiungi i dati "IN" e "OUT" separatamente
+            if (timbratura.deviceId === deviceId) {
+              if (timbratura.type === 'IN') {
+                filteredInData.push(timbratura);
+              } else if (timbratura.type === 'OUT') {
+                filteredOutData.push(timbratura);
+              }
+            }
+          }
+    
+          // Aggiungi la riga per i dati "IN"
+          const row = tableBody.insertRow();
+    
+          // Aggiungi la cella per i dati "IN"
+          const inCell = row.insertCell(0);
+          inCell.innerHTML = filteredInData.map(timbratura => `
+            <p>${timbratura.timestamp} - ${timbratura.coords.latitude}, ${timbratura.coords.longitude}</p>
+          `).join('');
+    
+          // Aggiungi la cella per i dati "OUT"
+          const outCell = row.insertCell(1);
+          outCell.innerHTML = filteredOutData.map(timbratura => `
+            <p>${timbratura.timestamp} - ${timbratura.coords.latitude}, ${timbratura.coords.longitude}</p>
+          `).join('');
+    
+          // Mostra la tabella dei dati
+          if (tableBody.children.length === 0) {
+            document.getElementById('status').innerText = 'Nessuna timbratura trovata per questo dispositivo.';
+          } else {
+            document.getElementById('dataTable').style.display = 'block';
+          }
+        } else {
+          document.getElementById('status').innerText = 'Nessuna timbratura trovata.';
+        }
+      } catch (error) {
+        console.error("Errore nel recupero delle timbrature:", error);
+      }
+    }
+
     // Funzione generica per gestire sia la timbratura IN che OUT
     function clockAction(type) {
       const deviceId = getDeviceName();
