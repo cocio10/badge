@@ -65,19 +65,56 @@
       font-weight: bold;
       text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
     }
+
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 80%;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #fff;
+    }
+
+    th {
+      background-color: #2a5298;
+    }
+
+    td {
+      background-color: #1e3c72;
+    }
   </style>
 </head>
 <body>
   <h1>Timbra</h1>
   <button id="in">IN</button>
   <button id="out">OUT</button>
+  <button id="viewData">Visualizza Dati</button>
   <p id="status"></p>
   <p id="ok"></p>
+
+  <div id="dataTable" style="display:none;">
+    <h2>Storico Timbrature</h2>
+    <table id="timbratureTable">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Data</th>
+          <th>Latitudine</th>
+          <th>Longitudine</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 
   <script type="module">
     // Importa le librerie di Firebase
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
-    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
+    import { getDatabase, ref, push, get, child } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 
     // Configurazione Firebase
     const firebaseConfig = {
@@ -192,8 +229,39 @@
       );
     }
 
+    // Funzione per visualizzare i dati
+    async function viewData() {
+      const deviceId = checkDevice();
+      const timbratureRef = ref(database, 'timbrature');
+      const snapshot = await get(timbratureRef);
+      
+      if (snapshot.exists()) {
+        const timbrature = snapshot.val();
+        const filteredData = Object.values(timbrature).filter(timbratura => timbratura.deviceId === deviceId);
+        
+        const tableBody = document.getElementById('timbratureTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+
+        filteredData.forEach(timbratura => {
+          const row = tableBody.insertRow();
+          row.innerHTML = `
+            <td>${timbratura.type}</td>
+            <td>${timbratura.timestamp}</td>
+            <td>${timbratura.coords.latitude}</td>
+            <td>${timbratura.coords.longitude}</td>
+          `;
+        });
+
+        document.getElementById('dataTable').style.display = 'block';
+      } else {
+        document.getElementById('status').innerText = 'Nessuna timbratura trovata.';
+      }
+    }
+
+    // Event listeners per i pulsanti
     document.getElementById('in').onclick = () => handleTimbratura('In');
     document.getElementById('out').onclick = () => handleTimbratura('Out');
+    document.getElementById('viewData').onclick = viewData;
   </script>
 </body>
 </html>
