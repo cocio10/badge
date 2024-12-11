@@ -6,20 +6,56 @@
   <title>Timbratura Dipendenti</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       text-align: center;
-      margin-top: 50px;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
     button {
       padding: 15px 30px;
-      margin: 20px;
+      margin: 10px;
       font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
+      border: none;
+      border-radius: 25px;
+      background: #ff9800;
+      color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
     }
+
+    button:hover {
+      background: #e68900;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+    }
+
     #status {
       margin-top: 20px;
-      font-size: 16px;
-      color: red;
+      font-size: 1.2em;
+      color: #ff5722;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
     }
   </style>
 </head>
@@ -38,7 +74,7 @@
     const firebaseConfig = {
       apiKey: "AIzaSyCNDBkX3-sYQKD_BKzMvyrR6td5UmwOfwA",
       authDomain: "badge-56d25.firebaseapp.com",
-      databaseURL: "https://badge-56d25-default-rtdb.europe-west1.firebasedatabase.app", // Realtime Database URL
+      databaseURL: "https://badge-56d25-default-rtdb.europe-west1.firebasedatabase.app/ // Realtime Database URL
       projectId: "badge-56d25",
       storageBucket: "badge-56d25.appspot.com",
       messagingSenderId: "898685148145",
@@ -130,6 +166,8 @@
           const distance = calculateDistance(
             latitude, longitude, officeCoords.lat, officeCoords.lon
           );
+
+          console.log(`Distanza calcolata: ${distance} km`);
 
           if (distance <= radius) {
             await saveTimbratura(type, latitude, longitude, deviceId);
