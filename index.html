@@ -159,7 +159,7 @@
       if (userName) {
         setCookie('device_id', userName, 365); // Salva il nome come device_id nei cookie
         document.getElementById('userForm').style.display = 'none'; // Nascondi il form
-        document.getElementById('deviceNameDisplay').innerText = `ID Dispositivo: ${userName}`; // Mostra il nome come testo
+        document.getElementById('deviceNameDisplay').innerText = `${userName}`; // Mostra il nome come testo
         document.getElementById('deviceNameDisplay').style.display = 'block'; // Mostra il testo
       }
     }
@@ -171,7 +171,7 @@
     
       if (deviceId) {
         document.getElementById('userForm').style.display = 'none'; // Nascondi il form
-        document.getElementById('deviceNameDisplay').innerText = `ID Dispositivo: ${deviceId}`; // Mostra il nome come testo
+        document.getElementById('deviceNameDisplay').innerText = `${deviceId}`; // Mostra il nome come testo
         document.getElementById('deviceNameDisplay').style.display = 'block'; // Mostra il testo
       } else {
         document.getElementById('userForm').style.display = 'block'; // Mostra il form se non esiste il cookie
