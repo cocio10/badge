@@ -256,24 +256,16 @@
               // Timbratura IN
               push(ref(database, 'timbrature/'), {
                 deviceId: deviceId,
-                in: formatTimestamp(timestamp),
-                out: 'Non timbrato'
+                in: formatTimestamp(timestamp)
               });
               document.getElementById('ok').innerText = "Timbratura IN effettuata.";
             } else if (type === 'out') {
               // Timbratura OUT
-              get(child(ref(database), 'timbrature/')).then((snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                  const data = childSnapshot.val();
-                  if (data.deviceId === deviceId && data.out === 'Non timbrato') {
-                    const updateRef = ref(database, 'timbrature/' + childSnapshot.key);
-                    update(updateRef, {
-                      out: formatTimestamp(timestamp)
-                    });
-                    document.getElementById('ok').innerText = "Timbratura OUT effettuata.";
-                  }
-                });
+              push(ref(database, 'timbrature/'), {
+                deviceId: deviceId,
+                out: formatTimestamp(timestamp)
               });
+              document.getElementById('ok').innerText = "Timbratura OUT effettuata.";
             }
           } else {
             document.getElementById('status').innerText = "Fuori dal raggio consentito!";
