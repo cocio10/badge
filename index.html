@@ -314,6 +314,7 @@
               deviceId: deviceId,
               in: formatTimestamp(timestamp)
             });
+            document.getElementById('status').classList.remove('error');
             document.getElementById('status').innerText = "Timbratura IN effettuata.";
           } else if (type === 'out') {
             // Timbratura OUT
@@ -321,6 +322,7 @@
               deviceId: deviceId,
               out: formatTimestamp(timestamp)
             });
+            document.getElementById('status').classList.remove('error');
             document.getElementById('status').innerText = "Timbratura OUT effettuata.";
           }
         } else {
