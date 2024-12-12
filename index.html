@@ -333,8 +333,10 @@
     }
 
     function deviceNameDisplay() {
-      document.getElementById('deviceNameDisplay').innerText = 'Ciao, ' + getDeviceName() + '!';
+      const deviceName = getDeviceName();
+      document.getElementById('deviceNameDisplay').innerText = deviceName ? 'Ciao, ' + deviceName + '!' : 'Ciao!';
     }
+
 
     function close() {
       document.getElementById('dataTable').style.display = 'none';
