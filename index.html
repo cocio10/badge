@@ -255,7 +255,7 @@
           const filteredData = Object.values(data).filter(timbratura => timbratura.deviceId === deviceId);
           
           if (filteredData.length === 0) {
-            document.getElementById('status').innerText = 'Nessuna timbratura trovata per questo dispositivo.';
+            document.getElementById('status').innerText = 'Nessuna timbratura trovata.';
             document.getElementById('status').classList.add('error');
           } else {
             // Aggiungi la riga per ogni timbratura
@@ -361,8 +361,7 @@
     
     // Avvia l'orologio live
     setInterval(updateClock, 10000);
-    updateClock(); // Aggiorna immediatamente all'avvio
-    // Avvia la lettura del nome del dispositivo
+    updateClock(); 
     deviceNameDisplay();
   </script>
 </body>
