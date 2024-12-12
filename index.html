@@ -256,6 +256,7 @@
           
           if (filteredData.length === 0) {
             document.getElementById('status').innerText = 'Nessuna timbratura trovata per questo dispositivo.';
+            document.getElementById('status').classList.add('error');
           } else {
             // Aggiungi la riga per ogni timbratura
             filteredData.forEach(timbratura => {
@@ -275,6 +276,7 @@
           }
         } else {
           document.getElementById('status').innerText = 'Nessuna timbratura trovata.';
+          document.getElementById('status').classList.add('error');
         }
       } catch (error) {
         console.error("Errore nel recupero delle timbrature:", error);
@@ -293,6 +295,7 @@
           setDeviceName(deviceId);  // Salva il deviceId nel cookie
         } else {
           document.getElementById('status').innerText = "Nome non inserito, impossibile procedere.";
+          document.getElementById('status').classList.add('error');
           return;
         }
       }
@@ -322,6 +325,7 @@
           }
         } else {
           document.getElementById('status').innerText = "Fuori dal raggio consentito!";
+          document.getElementById('status').classList.add('error');
         }
       });
     }
