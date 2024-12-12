@@ -344,8 +344,14 @@
     }
     
     // Gestione eventi per i bottoni
-    document.getElementById('in').addEventListener('click', () => clockAction('in'));
-    document.getElementById('out').addEventListener('click', () => clockAction('out'));
+    document.getElementById('in').addEventListener('click', () => {
+      clockAction('in');
+      viewData();
+    });    
+    document.getElementById('out').addEventListener('click', () => {
+      clockAction('out');
+      viewData();
+    });
     document.getElementById('viewData').addEventListener('click', viewData);
     document.getElementById('close').addEventListener('click', close);
     
