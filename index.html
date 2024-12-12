@@ -35,10 +35,18 @@
         color: var(--primary-color);
         font-weight: 500;
     }
-
+    
+    #buttonContainer {
+        display: grid;
+        gap: 10px;
+        margin: 16px 0;
+    }
+    #viewData {
+        grid-column: span 2; /* Il pulsante "Visualizza Dati" occupa entrambe le colonne */
+    }
+    
     button {
         padding: 12px 24px;
-        margin: 8px;
         font-size: 16px;
         font-weight: 500;
         border: none;
@@ -108,17 +116,6 @@
         color: var(--secondary-color);
         margin: -39px 0 16px;
         font-weight: 400;
-    }
-    #buttonContainer {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* Due colonne uguali */
-        gap: 16px; /* Spaziatura tra i pulsanti */
-        margin: 16px 0; /* Margine sopra e sotto il contenitore */
-        justify-items: center; /* Centra gli elementi orizzontalmente */
-    }
-    #viewData {
-        grid-column: span 2; /* Il pulsante "Visualizza Dati" occupa entrambe le colonne */
-        width: 60%; /* Opzionale: larghezza personalizzata per il pulsante */
     }
 </style>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
