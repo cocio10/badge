@@ -314,14 +314,14 @@
               deviceId: deviceId,
               in: formatTimestamp(timestamp)
             });
-            document.getElementById('ok').innerText = "Timbratura IN effettuata.";
+            document.getElementById('status').innerText = "Timbratura IN effettuata.";
           } else if (type === 'out') {
             // Timbratura OUT
             push(ref(database, 'timbrature/'), {
               deviceId: deviceId,
               out: formatTimestamp(timestamp)
             });
-            document.getElementById('ok').innerText = "Timbratura OUT effettuata.";
+            document.getElementById('status').innerText = "Timbratura OUT effettuata.";
           }
         } else {
           document.getElementById('status').innerText = "Fuori dal raggio consentito!";
