@@ -67,6 +67,10 @@
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
     }
 
+    .same-width {
+        width: 100%; /* Si adatta alla colonna */
+    }
+      
     #status, #ok {
         margin-top: 16px;
         font-size: 1em;
@@ -124,9 +128,9 @@
   <h1><p id="deviceNameDisplay"></p></h1>
   <p id="liveClock"></p>
   <div id="buttonContainer">
-    <button id="in">IN</button>
-    <button id="out">OUT</button>
-    <button id="viewData">Visualizza Dati</button>
+    <button id="in" class="same-width">IN</button>
+    <button id="out" class="same-width">OUT</button>
+    <button id="viewData">Visualizza storico</button>
   </div>
   <p id="status"></p>
   <p id="ok"></p>
