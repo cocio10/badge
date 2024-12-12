@@ -317,6 +317,7 @@
             });
             document.getElementById('status').classList.remove('error');
             document.getElementById('status').innerText = "Timbratura IN effettuata.";
+            viewData();
           } else if (type === 'out') {
             // Timbratura OUT
             push(ref(database, 'timbrature/'), {
@@ -325,6 +326,7 @@
             });
             document.getElementById('status').classList.remove('error');
             document.getElementById('status').innerText = "Timbratura OUT effettuata.";
+            viewData();
           }
         } else {
           document.getElementById('status').innerText = "Fuori dal raggio consentito!";
@@ -344,14 +346,8 @@
     }
     
     // Gestione eventi per i bottoni
-    document.getElementById('in').addEventListener('click', () => {
-      clockAction('in');
-      viewData();
-    });    
-    document.getElementById('out').addEventListener('click', () => {
-      clockAction('out');
-      viewData();
-    });
+    document.getElementById('in').addEventListener('click', () => clockAction('in'));   
+    document.getElementById('out').addEventListener('click', () => clockAction('out'));
     document.getElementById('viewData').addEventListener('click', viewData);
     document.getElementById('close').addEventListener('click', close);
     
