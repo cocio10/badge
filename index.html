@@ -131,7 +131,7 @@
   </div>
   <p id="status"></p>
   <div id="dataTable" style="display:none;">
-    <h2><p id="close">Storico timbrature ❌</p></h2>
+    <h2><p id="close">Storico Timbrature ❌</p></h2>
     <table id="timbratureTable">
       <thead>
         <tr>
@@ -168,6 +168,13 @@
     // Posizione ufficio e raggio consentito (in km)
     const officeCoords = { lat: 40.870846, lon: 14.285135 }; // Napoli
     const radius = 2;
+
+    // Funzioni per i cookie
+    function setCookie(name, value, days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+    }
 
     function getCookie(name) {
       const cookies = document.cookie.split(';');
@@ -249,7 +256,6 @@
           
           if (filteredData.length === 0) {
             document.getElementById('status').innerText = 'Nessuna timbratura trovata per questo dispositivo.';
-            document.getElementById('status').classList.add('error');
           } else {
             // Aggiungi la riga per ogni timbratura
             filteredData.forEach(timbratura => {
@@ -269,8 +275,9 @@
           }
         } else {
           document.getElementById('status').innerText = 'Nessuna timbratura trovata.';
-          document.getElementById('status').classList.add('error');
         }
+      } catch (error) {
+        console.error("Errore nel recupero delle timbrature:", error);
       }
     }
 
@@ -286,7 +293,6 @@
           setDeviceName(deviceId);  // Salva il deviceId nel cookie
         } else {
           document.getElementById('status').innerText = "Nome non inserito, impossibile procedere.";
-          document.getElementById('status').classList.add('error');
           return;
         }
       }
@@ -305,18 +311,17 @@
               deviceId: deviceId,
               in: formatTimestamp(timestamp)
             });
-            document.getElementById('status').innerText = "Timbratura IN effettuata.";
+            document.getElementById('ok').innerText = "Timbratura IN effettuata.";
           } else if (type === 'out') {
             // Timbratura OUT
             push(ref(database, 'timbrature/'), {
               deviceId: deviceId,
               out: formatTimestamp(timestamp)
             });
-            document.getElementById('status').innerText = "Timbratura OUT effettuata.";
+            document.getElementById('ok').innerText = "Timbratura OUT effettuata.";
           }
         } else {
           document.getElementById('status').innerText = "Fuori dal raggio consentito!";
-          document.getElementById('status').classList.add('error');
         }
       });
     }
