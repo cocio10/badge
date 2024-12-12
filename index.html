@@ -9,7 +9,7 @@
     :root {
         --primary-color: #1300ee; /* Colore principale */
         --secondary-color: #0376ee; /* Colore secondario */
-        --background-color: #0003; /* Sfondo */
+        --background-color: #eee; /* Sfondo */
         --surface-color: #ffffff; /* Colore superfici */
         --text-color-primary: #000000; /* Testo primario */
         --text-color-secondary: #616161; /* Testo secondario */
@@ -98,14 +98,16 @@
     }
 
     #dataTable {
-        margin-top: 24px;
-        display: none;
+          margin-top: 24px;
+          display: none;
+          position: fixed;
+          background: var(--background-color);
     }
     #liveClock {
-    font-size: 1.2em;
-    color: var(--secondary-color);
-    margin: -39px 0 16px;
-    font-weight: 400;
+          font-size: 1.2em;
+          color: var(--secondary-color);
+          margin: -39px 0 16px;
+          font-weight: 400;
     }
 </style>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -118,9 +120,8 @@
   <button id="viewData">Visualizza Dati</button>
   <p id="status"></p>
   <p id="ok"></p>
-
   <div id="dataTable" style="display:none;">
-    <h2>Storico Timbrature</h2>
+    <h2>Storico Timbrature <p id="close">❌</p></h2>
     <table id="timbratureTable">
       <thead>
         <tr>
@@ -318,11 +319,16 @@
     function deviceNameDisplay() {
       document.getElementById('deviceNameDisplay').innerText = 'Ciao, ' + getDeviceName() + '!';
     }
-      
+
+    function close() {
+      document.getElementById('dataTable').style.display = 'none';
+    }
+    
     // Gestione eventi per i bottoni
     document.getElementById('in').addEventListener('click', () => clockAction('in'));
     document.getElementById('out').addEventListener('click', () => clockAction('out'));
     document.getElementById('viewData').addEventListener('click', viewData);
+    document.getElementById('close').addEventListener('click', close);
     
         // Funzione per ottenere la data e l'ora correnti nel formato gg/mm/aa hh:mm
     function updateClock() {
